@@ -26,8 +26,9 @@ var (
 	hardwareNameFile = "name"
 
 	// Attribute file for storing the hardware device current temperature.
-        tempPrefix = "temp"
+        prefixes = []string{"temp","fan"}
         inputSuffix = "_input"
+        labelSuffix = "_label"
 
 	// flag to check whether the AMD digital thermo module is in use
 	digitalAmdPowerModuleInUse = false
@@ -151,14 +152,7 @@ func main() {
 				"valid sensor data in the hardware input file, " +
 				"ergo no temperature data to print for this device.")
 
-			// append string values equivalent to the longest length.
-                        paddedName := trimmedName
-			for len(paddedName) < maxEntryLength+spacerSize {
-				paddedName += " "
-			}
-
-			// Finally, print out the temperature data of the current device.
-			fmt.Println(dir.Name(), "  ", paddedName, "N/A")
+			fmt.Println(dir.Name(), " ", trimmedName, "\t\t n/a")
 
 			// With that done, go ahead and move on to the next device.
 			continue
@@ -166,38 +160,39 @@ func main() {
 
                 for _, sensor := range sensors {
 
-                        // Usually hardware sensors uses 3-sigma of precision and stores
-                        // the value as an integer for purposes of simplicity.
-                        //
-                        // Ergo, this needs to be divided by 1000 to give temperature
-                        // values that are meaningful to humans.
-                        //
-                        sensor.intData /= 1000
+                        sensorUnits := ""
 
-                        // This acts as a work-around for the k10temp sensor module.
-                        if sensor.name == "k10temp" &&
+                        switch sensor.category {
+                        case "temp":
+
+                            // Usually hardware sensors uses 3-sigma of precision and stores
+                            // the value as an integer for purposes of simplicity.
+                            //
+                            // Ergo, this needs to be divided by 1000 to give temperature
+                            // values that are meaningful to humans.
+                            //
+                            sensor.intData /= 1000
+
+                            // This acts as a work-around for the k10temp sensor module.
+                            if sensor.name == "k10temp" &&
 				!digitalAmdPowerModuleInUse {
 
 				// Add 30 degrees to the current temperature.
 				sensor.intData += 30
+                            }
+
+                            sensorUnits = "C"
+                            sensorUnits += "\t\ttemperature sensor " + strconv.Itoa(sensor.number)
+
+                        case "fan":
+                            sensorUnits = "RPM"
+                            sensorUnits += "\tfan sensor " + strconv.Itoa(sensor.number)
+
+                        case "default":
+                            // assume a default of no units
                         }
 
-                        // append string values equivalent to the longest length.
-                        paddedName := sensor.name
-                        for len(paddedName) < maxEntryLength+spacerSize {
-				paddedName += " "
-                        }
-
-                        sensorLabel := ""
-                        if sensor.category == "temp" {
-                                sensorLabel = "C"
-                        }
-
-                        if sensor.category == "temp" {
-                                sensorLabel += "   temperature sensor " + strconv.Itoa(sensor.number)
-                        }
-
-                        fmt.Println(dir.Name(), "  ", paddedName, sensor.intData, sensorLabel)
+                        fmt.Println(dir.Name(), "\t", sensor.name, "\t", sensor.intData, sensorUnits)
                 }
 	}
 }
