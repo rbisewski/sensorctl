@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 //
@@ -26,9 +26,9 @@ var (
 	hardwareNameFile = "name"
 
 	// Attribute file for storing the hardware device current temperature.
-        prefixes = []string{"temp","fan"}
-        inputSuffix = "_input"
-        labelSuffix = "_label"
+	prefixes    = []string{"temp", "fan"}
+	inputSuffix = "_input"
+	labelSuffix = "_label"
 
 	// flag to check whether the AMD digital thermo module is in use
 	digitalAmdPowerModuleInUse = false
@@ -68,9 +68,9 @@ func main() {
 		os.Exit(0)
 	}
 
-        // normally there will likely be at least one sensor exposed to
-        // the operating system; however, in theory there could be edge cases
-        // where there are no sensors, so account for that here
+	// normally there will likely be at least one sensor exposed to
+	// the operating system; however, in theory there could be edge cases
+	// where there are no sensors, so account for that here
 	listOfDeviceDirs, err := ioutil.ReadDir(hardwareMonitorDirectory)
 	if err != nil {
 		panic(err)
@@ -142,7 +142,7 @@ func main() {
 		// Trim away any excess whitespace from the hardware name file data.
 		trimmedName := strings.Trim(string(nameValueOfHardwareDevice), " \n")
 
-                sensors, err := GetSensorData(trimmedName, dir.Name())
+		sensors, err := GetSensorData(trimmedName, dir.Name())
 
 		// If err is not nil, then the temperature file does not have valid
 		// integer data. So tell the end-user no data is available.
@@ -158,41 +158,41 @@ func main() {
 			continue
 		}
 
-                for _, sensor := range sensors {
+		for _, sensor := range sensors {
 
-                        sensorUnits := ""
+			sensorUnits := ""
 
-                        switch sensor.category {
-                        case "temp":
+			switch sensor.category {
+			case "temp":
 
-                            // Usually hardware sensors uses 3-sigma of precision and stores
-                            // the value as an integer for purposes of simplicity.
-                            //
-                            // Ergo, this needs to be divided by 1000 to give temperature
-                            // values that are meaningful to humans.
-                            //
-                            sensor.intData /= 1000
+				// Usually hardware sensors uses 3-sigma of precision and stores
+				// the value as an integer for purposes of simplicity.
+				//
+				// Ergo, this needs to be divided by 1000 to give temperature
+				// values that are meaningful to humans.
+				//
+				sensor.intData /= 1000
 
-                            // This acts as a work-around for the k10temp sensor module.
-                            if sensor.name == "k10temp" &&
-				!digitalAmdPowerModuleInUse {
+				// This acts as a work-around for the k10temp sensor module.
+				if sensor.name == "k10temp" &&
+					!digitalAmdPowerModuleInUse {
 
-				// Add 30 degrees to the current temperature.
-				sensor.intData += 30
-                            }
+					// Add 30 degrees to the current temperature.
+					sensor.intData += 30
+				}
 
-                            sensorUnits = "C"
-                            sensorUnits += "\t\ttemperature sensor " + strconv.Itoa(sensor.number)
+				sensorUnits = "C"
+				sensorUnits += "\t\ttemperature sensor " + strconv.Itoa(sensor.number)
 
-                        case "fan":
-                            sensorUnits = "RPM"
-                            sensorUnits += "\tfan sensor " + strconv.Itoa(sensor.number)
+			case "fan":
+				sensorUnits = "RPM"
+				sensorUnits += "\tfan sensor " + strconv.Itoa(sensor.number)
 
-                        case "default":
-                            // assume a default of no units
-                        }
+			case "default":
+				// assume a default of no units
+			}
 
-                        fmt.Println(dir.Name(), "\t", sensor.name, "\t", sensor.intData, sensorUnits)
-                }
+			fmt.Println(dir.Name(), "\t", sensor.name, "\t", sensor.intData, sensorUnits)
+		}
 	}
 }
