@@ -16,21 +16,17 @@ import (
  */
 func debug(debugMsg string) {
 
-	// Return if debug mode is disabled.
 	if debugMode != true {
 		return
 	}
 
-	// Input validation.
-	if len(debugMsg) < 1 {
+	if debugMsg == "" {
 		return
 	}
 
 	// Trim away unneeded whitespace.
 	debugMsg = strings.Trim(debugMsg, " ")
-
-	// Sanity check, make sure the pre-Trim'd string wasn't just whitespace.
-	if len(debugMsg) < 1 {
+	if debugMsg == "" {
 		return
 	}
 
@@ -50,7 +46,6 @@ func GetSensorData(name string, hwmon string) ([]Sensor, error) {
 
 	sensors := make([]Sensor, 0)
 
-	// input validation
 	if name == "" || hwmon == "" {
 		return sensors, fmt.Errorf("GetSensorData(): invalid input")
 	}
@@ -124,12 +119,10 @@ func GetSensorData(name string, hwmon string) ([]Sensor, error) {
  */
 func SetGlobalSensorFlags(dirs []os.FileInfo) error {
 
-	// input validation
 	if dirs == nil || len(dirs) < 1 {
 		return fmt.Errorf("SetGlobalSensorFlags(): invalid input")
 	}
 
-	// Cycle thru the entire list of device directories...
 	for _, dir := range dirs {
 
 		// Assemble the filepath to the name file of the currently given
@@ -210,6 +203,5 @@ func SetGlobalSensorFlags(dirs []os.FileInfo) error {
 		digitalAmdPowerModuleInUse = true
 	}
 
-	// everything worked fine, so return null
 	return nil
 }

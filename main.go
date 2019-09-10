@@ -76,8 +76,6 @@ func main() {
 		panic(err)
 	}
 
-	// Debug mode, print out a list of files in the directory specified by
-	// the "hardwareMonitorDirectory" global variable.
 	if debugMode {
 
 		debug("The following IDs are present in the hardware sensor " +
@@ -90,8 +88,6 @@ func main() {
 
 	// Search thru the directories and set the relevant flags...
 	err = SetGlobalSensorFlags(listOfDeviceDirs)
-
-	// safety check, ensure no errors occurred
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -111,10 +107,7 @@ func main() {
 			hardwareNameFilepathOfGivenDevice)
 
 		// ...check to see if a 'name' file is present inside the directory.
-		nameValueOfHardwareDevice, err := ioutil.ReadFile(
-			hardwareNameFilepathOfGivenDevice)
-
-		// If err is not nil, skip this device.
+		nameValueOfHardwareDevice, err := ioutil.ReadFile(hardwareNameFilepathOfGivenDevice)
 		if err != nil {
 
 			// If debug mode, then print out a message telling the user
@@ -126,16 +119,9 @@ func main() {
 			continue
 		}
 
-		// If the hardware name file does not contain anything of value,
-		// skip it and move on to the next device.
 		if len(nameValueOfHardwareDevice) < 1 {
-
-			// If debug mode, then print out a message telling the user
-			// which device is missing a hardware 'name' file.
 			debug("Warning: The hardware name file of " + dir.Name() +
 				" does not contain valid data. Skipping...")
-
-			// Move on to the next device.
 			continue
 		}
 
@@ -143,9 +129,6 @@ func main() {
 		trimmedName := strings.Trim(string(nameValueOfHardwareDevice), " \n")
 
 		sensors, err := GetSensorData(trimmedName, dir.Name())
-
-		// If err is not nil, then the temperature file does not have valid
-		// integer data. So tell the end-user no data is available.
 		if err != nil || len(sensors) < 1 {
 
 			debug("Warning: " + dir.Name() + " does not contain " +
@@ -153,8 +136,6 @@ func main() {
 				"ergo no temperature data to print for this device.")
 
 			fmt.Println(dir.Name(), " ", trimmedName, "\t\t n/a")
-
-			// With that done, go ahead and move on to the next device.
 			continue
 		}
 
