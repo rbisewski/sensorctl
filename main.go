@@ -9,18 +9,14 @@ import (
 	"strings"
 )
 
-//
-// Globals
-//
 var (
-	// cpu info location, as of kernel 4.4+
-	cpuinfoDirectory = "/proc/cpuinfo"
+	printVersion = false
+	Version = "0.0"
 
-	// Current location of the hardware sensor data, as of kernel 4.4+
-	hardwareMonitorDirectory = "/sys/class/hwmon/"
-
-	// Whether or not to print debug messages.
 	debugMode = false
+
+	cpuinfoDirectory = "/proc/cpuinfo"
+	hardwareMonitorDirectory = "/sys/class/hwmon/"
 
 	// Attribute file for storing the hardware device name.
 	hardwareNameFile = "name"
@@ -38,17 +34,9 @@ var (
 
 	// spacer size
 	spacerSize = 4
-
-	// Whether or not to print the current version of the program
-	printVersion = false
-
-	// default version value
-	Version = "0.0"
 )
 
-// Initialize the argument input flags.
 func init() {
-
 	flag.BoolVar(&printVersion, "version", false,
 		"Print the current version of this program and exit.")
 
@@ -56,9 +44,6 @@ func init() {
 		"Dump debug output to stdout.")
 }
 
-//
-// PROGRAM MAIN
-//
 func main() {
 
 	flag.Parse()
@@ -114,8 +99,6 @@ func main() {
 			// which device is missing a hardware 'name' file.
 			debug("Warning: " + dir.Name() + " does not contain a " +
 				"hardware name file. Skipping...")
-
-			// Move on to the next device.
 			continue
 		}
 

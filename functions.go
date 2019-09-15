@@ -30,7 +30,6 @@ func debug(debugMsg string) {
 		return
 	}
 
-	// Since this got a non-blank string, go ahead and print it to stdout.
 	fmt.Println(debugMsg)
 }
 
@@ -127,40 +126,27 @@ func SetGlobalSensorFlags(dirs []os.FileInfo) error {
 
 		// Assemble the filepath to the name file of the currently given
 		// hardware device.
-		hardwareNameFilepathOfGivenDevice := hardwareMonitorDirectory +
-			dir.Name() + "/" + hardwareNameFile
+		filepath := hardwareMonitorDirectory + dir.Name() + "/" + hardwareNameFile
 
 		// If debug mode, print out the current 'name' file we are about
 		// to open.
-		debug(dir.Name() + " --> " +
-			hardwareNameFilepathOfGivenDevice)
+		debug(dir.Name() + " --> " + filepath)
 
 		// ...check to see if a 'name' file is present inside the directory.
-		nameValueOfHardwareDevice, err := ioutil.ReadFile(
-			hardwareNameFilepathOfGivenDevice)
+		nameValueOfHardwareDevice, err := ioutil.ReadFile(filepath)
 
 		// If err is not nil, skip this device.
 		if err != nil {
-
-			// If debug mode, then print out a message telling the user
-			// which device is missing a hardware 'name' file.
 			debug("Warning: " + dir.Name() + " does not contain a " +
 				"hardware name file. Skipping...")
-
-			// Move on to the next device.
 			continue
 		}
 
 		// If the hardware name file does not contain anything of value,
 		// skip it and move on to the next device.
 		if len(nameValueOfHardwareDevice) < 1 {
-
-			// If debug mode, then print out a message telling the user
-			// which device is missing a hardware 'name' file.
 			debug("Warning: The hardware name file of " + dir.Name() +
 				" does not contain valid data. Skipping...")
-
-			// Move on to the next device.
 			continue
 		}
 
