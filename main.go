@@ -11,11 +11,11 @@ import (
 
 var (
 	printVersion = false
-	Version = "0.0"
+	Version      = "0.0"
 
 	debugMode = false
 
-	cpuinfoDirectory = "/proc/cpuinfo"
+	cpuinfoDirectory         = "/proc/cpuinfo"
 	hardwareMonitorDirectory = "/sys/class/hwmon/"
 
 	// Attribute file for storing the hardware device name.
