@@ -91,12 +91,9 @@ func main() {
 		debug(dir.Name() + " --> " +
 			hardwareNameFilepathOfGivenDevice)
 
-		// ...check to see if a 'name' file is present inside the directory.
+		// check to see if a 'name' file is present inside the directory.
 		nameValueOfHardwareDevice, err := ioutil.ReadFile(hardwareNameFilepathOfGivenDevice)
 		if err != nil {
-
-			// If debug mode, then print out a message telling the user
-			// which device is missing a hardware 'name' file.
 			debug("Warning: " + dir.Name() + " does not contain a " +
 				"hardware name file. Skipping...")
 			continue
@@ -113,7 +110,6 @@ func main() {
 
 		sensors, err := GetSensorData(trimmedName, dir.Name())
 		if err != nil || len(sensors) < 1 {
-
 			debug("Warning: " + dir.Name() + " does not contain " +
 				"valid sensor data in the hardware input file, " +
 				"ergo no temperature data to print for this device.")
