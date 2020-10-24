@@ -18,12 +18,10 @@ var (
 	cpuinfoDirectory         = "/proc/cpuinfo"
 	hardwareMonitorDirectory = "/sys/class/hwmon/"
 
-	// Attribute file for storing the hardware device name.
-	hardwareNameFile = "name"
-
-	// Attribute file for storing the hardware device current temperature.
 	prefixes    = []string{"temp", "fan"}
 	inputSuffix = "_input"
+
+	hardwareNameFile = "name"
 
 	// flag to check whether the AMD digital thermo module is in use
 	digitalAmdPowerModuleInUse = false
@@ -108,13 +106,18 @@ func main() {
 
 			fmt.Println(
 				dir.Name(),
-				"\n├─"+trimmedName,
-				"\n└─ n/a",
+				"-",
+				trimmedName,
+				"\n└─ no data found",
 				"\n")
 			continue
 		}
 
-		for _, sensor := range sensors {
+		fmt.Print(dir.Name(), " - ", trimmedName, "\n│")
+
+		numberOfSensors := len(sensors)
+
+		for i, sensor := range sensors {
 
 			sensorType := ""
 			sensorUnits := ""
@@ -149,14 +152,35 @@ func main() {
 				// assume a default of no units
 			}
 
-			fmt.Println(
-				dir.Name(),
-				"\n├─"+sensor.name,
-				"\n├─"+sensorType,
-				"\n└─",
-				sensor.intData,
-				sensorUnits,
-				"\n")
+			if i == 0 && numberOfSensors == 1 {
+				fmt.Println(
+					"\n├─"+sensorType,
+					"\n└─",
+					sensor.intData,
+					sensorUnits,
+					"\n")
+			} else if i == numberOfSensors-1 {
+				fmt.Println(
+					"\n├─"+sensorType,
+					"\n└─",
+					sensor.intData,
+					sensorUnits,
+					"\n")
+			} else if i == 0 {
+				fmt.Print(
+					"\n├─"+sensorType,
+					"\n├─ ",
+					sensor.intData,
+					" "+sensorUnits,
+					"\n│")
+			} else {
+				fmt.Print(
+					"\n├─"+sensorType,
+					"\n├─ ",
+					sensor.intData,
+					" "+sensorUnits,
+					"\n│")
+			}
 		}
 	}
 }
