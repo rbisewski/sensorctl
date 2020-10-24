@@ -154,16 +154,6 @@ func SetGlobalSensorFlags(dirs []os.FileInfo) error {
 		nameValueOfHardwareDeviceAsString :=
 			strings.Trim(string(nameValueOfHardwareDevice), " \n")
 
-		// Determine the length of the longest entry string
-		//
-		// TODO: this is a less than ideal place for this code, consider
-		//       rewriting how this program handles hwmonX entries at some
-		//       future date
-		//
-		if len(nameValueOfHardwareDeviceAsString) > maxEntryLength {
-			maxEntryLength = len(nameValueOfHardwareDeviceAsString)
-		}
-
 		// Conduct a quick check to determine if the 'fam15h_power' module
 		// is currently in use.
 		if nameValueOfHardwareDeviceAsString == "fam15h_power" {

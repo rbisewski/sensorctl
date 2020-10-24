@@ -11,7 +11,7 @@ import (
 
 var (
 	printVersion = false
-	Version      = "0.0"
+	version      = "0.0"
 
 	debugMode = false
 
@@ -24,16 +24,9 @@ var (
 	// Attribute file for storing the hardware device current temperature.
 	prefixes    = []string{"temp", "fan"}
 	inputSuffix = "_input"
-	labelSuffix = "_label"
 
 	// flag to check whether the AMD digital thermo module is in use
 	digitalAmdPowerModuleInUse = false
-
-	// size of the longest hwmonX/name entry string
-	maxEntryLength = 0
-
-	// spacer size
-	spacerSize = 4
 )
 
 func init() {
@@ -49,7 +42,7 @@ func main() {
 	flag.Parse()
 
 	if printVersion {
-		fmt.Println("tempchk v" + Version)
+		fmt.Println("sensorctl v" + version)
 		os.Exit(0)
 	}
 
@@ -88,8 +81,7 @@ func main() {
 
 		// If debug mode, print out the current 'name' file we are about
 		// to open.
-		debug(dir.Name() + " --> " +
-			hardwareNameFilepathOfGivenDevice)
+		debug(dir.Name() + " --> " + hardwareNameFilepathOfGivenDevice)
 
 		// check to see if a 'name' file is present inside the directory.
 		nameValueOfHardwareDevice, err := ioutil.ReadFile(hardwareNameFilepathOfGivenDevice)
@@ -114,12 +106,17 @@ func main() {
 				"valid sensor data in the hardware input file, " +
 				"ergo no temperature data to print for this device.")
 
-			fmt.Println(dir.Name(), " ", trimmedName, "\t\t n/a")
+			fmt.Println(
+				dir.Name(),
+				"\n├─"+trimmedName,
+				"\n└─ n/a",
+				"\n")
 			continue
 		}
 
 		for _, sensor := range sensors {
 
+			sensorType := ""
 			sensorUnits := ""
 
 			switch sensor.category {
@@ -141,18 +138,25 @@ func main() {
 					sensor.intData += 30
 				}
 
+				sensorType = "temperature sensor " + strconv.Itoa(sensor.number)
 				sensorUnits = "C"
-				sensorUnits += "\t\ttemperature sensor " + strconv.Itoa(sensor.number)
 
 			case "fan":
+				sensorType = "fan sensor " + strconv.Itoa(sensor.number)
 				sensorUnits = "RPM"
-				sensorUnits += "\tfan sensor " + strconv.Itoa(sensor.number)
 
 			case "default":
 				// assume a default of no units
 			}
 
-			fmt.Println(dir.Name(), "\t", sensor.name, "\t", sensor.intData, sensorUnits)
+			fmt.Println(
+				dir.Name(),
+				"\n├─"+sensor.name,
+				"\n├─"+sensorType,
+				"\n└─",
+				sensor.intData,
+				sensorUnits,
+				"\n")
 		}
 	}
 }
